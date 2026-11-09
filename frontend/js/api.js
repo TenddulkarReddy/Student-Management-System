@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://52.66.238.211:5000/api";
 
 async function handleResponse(response, defaultErrorMessage) {
     let data;
