@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-card">
+    <div class="auth-header">
+        <h2 class="logo">StudentHub</h2>
+        <p>Student Self-Service Portal</p>
+    </div>
+
+    <div id="loginError" class="auth-error"></div>
+
+    <form id="studentLoginForm">
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="studentId">Enter Student ID</label>
+            <input type="text" id="studentId" placeholder="e.g. CSE001" required autocomplete="off">
+        </div>
+
+        <button type="submit" class="add-btn w-100">Access Portal</button>
+    </form>
+
+    <div class="auth-footer">
+        <p>System Administrator? <a href="index.html">Go to Admin Dashboard</a></p>
+        <span class="auth-hint">Try Demo IDs: CSE001, ECE001, IT001, CSE002</span>
+    </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/student-portal.js"></script>
+</body>
+</html>

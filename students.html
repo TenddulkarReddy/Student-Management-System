@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">StudentHub</h2>
+
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="students.html" class="active">Students</a>
+            <a href="profile.html">Profile</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Student Management System</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Manage Students</h1>
+                <p>Add, search and manage student records</p>
+            </div>
+
+            <div class="admin">Admin</div>
+        </header>
+
+        <!-- Add Student Form -->
+        <section class="form-section">
+
+            <h2>Add New Student</h2>
+
+            <form id="studentForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName"
+                               placeholder="Enter student name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="">Select department</option>
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="IT">IT</option>
+                            <option value="EEE">EEE</option>
+                            <option value="MECH">MECH</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">Academic Year</label>
+                        <select id="year" required>
+                            <option value="">Select year</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="add-btn">
+                    Add Student
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Student Records -->
+        <section class="records">
+
+            <div class="records-header">
+                <div>
+                    <h2>Student Records</h2>
+                    <p id="studentCount">Loading students...</p>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="filters">
+
+                <input type="text"
+                       id="searchInput"
+                       placeholder="Search by name or student ID">
+
+                <select id="filterDepartment">
+                    <option value="">All Departments</option>
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="IT">IT</option>
+                    <option value="EEE">EEE</option>
+                    <option value="MECH">MECH</option>
+                </select>
+
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Year</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="studentTable">
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <p>© 2026 StudentHub | Student Management System</p>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/students.js"></script>
+
+</body>
+</html>
