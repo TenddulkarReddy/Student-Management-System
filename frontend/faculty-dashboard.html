@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Portal | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .faculty-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .faculty-kpi-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .faculty-kpi-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .faculty-kpi-card .value {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .faculty-kpi-card .subtext {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .tab-switcher-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-nav-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+        .tab-nav-btn.active {
+            background: #2563EB;
+            color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+        .tab-nav-btn.inactive {
+            background: #F1F5F9;
+            color: #475569;
+            border: 1px solid #CBD5E1;
+        }
+        .tab-nav-btn.inactive:hover {
+            background: #E2E8F0;
+            color: #0F172A;
+        }
+
+        .assignments-split-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 1.15fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .assignments-split-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-box {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .panel-box h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            color: #0F172A;
+        }
+        .panel-box p.subtitle {
+            margin: 0 0 18px 0;
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .assignment-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .submission-roster-box {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed #CBD5E1;
+            display: none;
+        }
+        .submission-student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StudentHub</h2>
+            <nav>
+                <a href="faculty-dashboard.html" class="active">Faculty Portal</a>
+                <a href="login.html" id="facultyLogout">Log Out</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <p id="facultyDeptLabel">Faculty Workspace</p>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1 id="facultyWelcomeName">Welcome, Faculty Member</h1>
+                <p>Course attendance management, grading evaluations, and targeted coursework distribution</p>
+            </div>
+            <div class="admin-badge" style="background: #EEF2FF; color: #4F46E5;">Course Faculty</div>
+        </header>
+
+        <!-- KPI Cards -->
+        <section class="faculty-kpi-grid">
+            <div class="faculty-kpi-card">
+                <h3>Assigned Classes</h3>
+                <p class="value" id="kpiAssignedClasses" style="color: #2563EB;">0</p>
+                <span class="subtext">Active Teaching Subjects</span>
+            </div>
+            <div class="faculty-kpi-card">
+                <h3>Total Enrolled Students</h3>
+                <p class="value" id="kpiEnrolledStudents" style="color: #059669;">0</p>
+                <span class="subtext">Under Your Instruction</span>
+            </div>
+        </section>
+
+        <!-- View Navigation Tabs -->
+        <div class="tab-switcher-nav">
+            <button type="button" id="tabGradingBtn" class="tab-nav-btn active" onclick="switchFacultyTab('grading')">
+                Course Rosters & Grading
+            </button>
+            <button type="button" id="tabWorkBtn" class="tab-nav-btn inactive" onclick="switchFacultyTab('work')">
+                Assign Course Work & Labs
+            </button>
+            <button type="button" id="tabSecurityBtn" class="tab-nav-btn inactive" onclick="switchFacultyTab('security')">
+                Account Security
+            </button>
+        </div>
+
+        <!-- VIEW 1: Rosters & Grading Table -->
+        <div id="viewGrading">
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Course Grading & Attendance Rosters</h2>
+                        <p>Enter subject attendance and test marks for students enrolled in your course</p>
+                    </div>
+                </div>
+
+                <div id="facultyClassesContainer">
+                    <p style="color: #94A3B8; padding: 20px 0;">Loading your class rosters...</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: Coursework & Labs (Side-by-Side Split View) -->
+        <div id="viewCoursework" style="display: none;">
+            <div class="assignments-split-grid">
+                <!-- Left: Publish Form -->
+                <div class="panel-box">
+                    <h3>Publish Course Work / Lab</h3>
+                    <p class="subtitle">Broadcast tasks specifically to students registered in that course</p>
+
+                    <form id="facultyAssignmentForm">
+                        <div class="form-group">
+                            <label for="targetCourseSelect">Target Class / Subject</label>
+                            <select id="targetCourseSelect" required>
+                                <option value="" disabled selected>Loading your courses...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workTitle">Task Title</label>
+                            <input type="text" id="workTitle" placeholder="e.g., Lab Exercise 4: SQL Queries" required autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dueDate">Submission Due Date</label>
+                            <input type="date" id="dueDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workDescription">Task Description & Instructions</label>
+                            <textarea id="workDescription" rows="4" placeholder="Specify instructions, deliverable formats (SQL/PDF), or grading criteria..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="publishWorkBtn" style="width: 100%; padding: 11px; font-weight: 600;">
+                            Publish Work to Class
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Active Published Tasks & Submission Tracking -->
+                <div class="panel-box">
+                    <h3>Active Coursework</h3>
+                    <p class="subtitle">Assignments, lab exercises, and student completion tracking</p>
+
+                    <div id="activeAssignmentsList">
+                        <p style="color: #94A3B8; font-size: 13px;">Loading published tasks...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: Account Security (Change Password) -->
+        <div id="viewSecurity" style="display: none;">
+            <section class="dashboard-section" style="max-width: 520px;">
+                <div class="section-header">
+                    <div>
+                        <h2>Change Password</h2>
+                        <p>Set a private, custom password for your faculty account</p>
+                    </div>
+                </div>
+
+                <form id="facultyPasswordForm">
+                    <div class="form-group">
+                        <label for="facCurrentPassword">Current Password</label>
+                        <input type="password" id="facCurrentPassword" placeholder="Enter current password" required autocomplete="current-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facNewPassword">New Password</label>
+                        <input type="password" id="facNewPassword" placeholder="Enter new password (min. 6 characters)" required minlength="6" autocomplete="new-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="facSavePasswordBtn" style="padding: 10px 20px; font-weight: 600;">
+                        Update Password
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        <footer>
+            <p>© 2026 StudentHub | Academic Management Platform</p>
+        </footer>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    const currentFaculty = getLoggedInFaculty();
+
+    if (!currentFaculty || !currentFaculty.name) {
+        alert("Session expired. Please log in through the Academic Portal.");
+        window.location.replace("login.html");
+    }
+
+    document.getElementById("facultyWelcomeName").textContent = `Welcome, ${currentFaculty.name}`;
+    document.getElementById("facultyDeptLabel").textContent = `${currentFaculty.department} Department`;
+
+    let instructorCourses = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadClasses();
+        loadInstructorAssignments();
+    });
+
+    window.switchFacultyTab = function(tabName) {
+        const viewGrading = document.getElementById("viewGrading");
+        const viewCoursework = document.getElementById("viewCoursework");
+        const viewSecurity = document.getElementById("viewSecurity");
+
+        const tabGradingBtn = document.getElementById("tabGradingBtn");
+        const tabWorkBtn = document.getElementById("tabWorkBtn");
+        const tabSecurityBtn = document.getElementById("tabSecurityBtn");
+
+        viewGrading.style.display = tabName === "grading" ? "block" : "none";
+        viewCoursework.style.display = tabName === "work" ? "block" : "none";
+        viewSecurity.style.display = tabName === "security" ? "block" : "none";
+
+        tabGradingBtn.className = `tab-nav-btn ${tabName === "grading" ? "active" : "inactive"}`;
+        tabWorkBtn.className = `tab-nav-btn ${tabName === "work" ? "active" : "inactive"}`;
+        tabSecurityBtn.className = `tab-nav-btn ${tabName === "security" ? "active" : "inactive"}`;
+
+        if (tabName === "grading") loadClasses();
+        if (tabName === "work") loadInstructorAssignments();
+    };
+
+    // 1. Load Classes and Populate Target Course Dropdown
+    async function loadClasses() {
+        const container = document.getElementById("facultyClassesContainer");
+        const selectEl = document.getElementById("targetCourseSelect");
+
+        try {
+            const classes = await fetchFacultyClasses(currentFaculty.name);
+
+            if (!classes || classes.length === 0) {
+                container.innerHTML = `
+                    <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 28px; text-align: center; color: #64748B;">
+                        No student enrollments registered for your assigned courses yet.
+                    </div>
+                `;
+                document.getElementById("kpiAssignedClasses").textContent = "0";
+                document.getElementById("kpiEnrolledStudents").textContent = "0";
+                if (selectEl) selectEl.innerHTML = `<option value="">No active classes available</option>`;
+                return;
+            }
+
+            const distinctCoursesMap = new Map();
+            classes.forEach(c => {
+                if (!distinctCoursesMap.has(c.course_id)) {
+                    distinctCoursesMap.set(c.course_id, c.course_name);
+                }
+            });
+
+            instructorCourses = Array.from(distinctCoursesMap.entries()).map(([id, name]) => ({ id, name }));
+            document.getElementById("kpiAssignedClasses").textContent = instructorCourses.length;
+            document.getElementById("kpiEnrolledStudents").textContent = classes.length;
+
+            if (selectEl) {
+                selectEl.replaceChildren();
+                instructorCourses.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c.id;
+                    opt.textContent = `[${c.id}] ${c.name}`;
+                    selectEl.appendChild(opt);
+                });
+            }
+
+            const grouped = {};
+            classes.forEach(c => {
+                const key = `[${c.course_id}] ${c.course_name}`;
+                if (!grouped[key]) grouped[key] = { meta: c, students: [] };
+                grouped[key].students.push(c);
+            });
+
+            container.replaceChildren();
+
+            Object.keys(grouped).forEach(courseKey => {
+                const group = grouped[courseKey];
+                const card = document.createElement("div");
+                card.style.background = "#FFFFFF";
+                card.style.border = "1px solid #E2E8F0";
+                card.style.borderRadius = "10px";
+                card.style.padding = "18px";
+                card.style.marginBottom = "18px";
+                card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.04)";
+
+                let rowsHtml = group.students.map(s => {
+                    const att = s.course_attendance !== null ? s.course_attendance : 85;
+                    const marks = s.course_marks !== null ? s.course_marks : 80;
+
+                    return `
+                        <tr style="border-bottom: 1px solid #F1F5F9;">
+                            <td style="padding: 12px 8px;"><strong>${s.student_id}</strong></td>
+                            <td style="padding: 12px 8px;">${s.student_name}</td>
+                            <td style="padding: 12px 8px;">
+                                <span class="dept-pill">${s.student_dept}</span> 
+                                <span style="font-size: 12px; color: #64748B; margin-left: 4px;">${s.academic_year}</span>
+                            </td>
+                            <td style="padding: 12px 8px;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="number" id="fac_att_${s.allocation_id}" min="0" max="100" value="${att}" style="width: 65px; padding: 6px 8px; border: 1px solid #CBD5E1; border-radius: 6px; font-weight: 600;">
+                                    <span style="font-size: 13px; color: #64748B;">%</span>
+                                </div>
+                            </td>
+                            <td style="padding: 12px 8px;">
+                                <input type="number" id="fac_marks_${s.allocation_id}" min="0" max="100" value="${marks}" style="width: 65px; padding: 6px 8px; border: 1px solid #CBD5E1; border-radius: 6px; font-weight: 600;">
+                            </td>
+                            <td style="padding: 12px 8px; text-align: right;">
+                                <button class="btn btn-sm btn-primary" onclick="saveStudentGrade(${s.allocation_id}, '${s.student_id}')" style="padding: 6px 14px; font-size: 12px;">Save Grade</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join("");
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px; margin-bottom: 12px;">
+                        <div>
+                            <h3 style="margin: 0; color: #0F172A; font-size: 16px;">${courseKey}</h3>
+                            <span style="font-size: 12px; color: #64748B;">Curriculum Weight: ${group.meta.credits} Credits</span>
+                        </div>
+                        <span style="background: #ECFDF5; color: #059669; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                            ${group.students.length} Student${group.students.length > 1 ? 's' : ''} Enrolled
+                        </span>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; font-size: 13px; color: #64748B; border-bottom: 1px solid #E2E8F0;">
+                                <th style="padding: 8px;">Student ID</th>
+                                <th style="padding: 8px;">Student Name</th>
+                                <th style="padding: 8px;">Cohort</th>
+                                <th style="padding: 8px;">Subject Attendance</th>
+                                <th style="padding: 8px;">Internal Marks (/100)</th>
+                                <th style="padding: 8px; text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                `;
+
+                container.appendChild(card);
+            });
+
+        } catch (err) {
+            container.innerHTML = `<p style="color: #DC2626; padding: 16px;">Error loading courses: ${err.message}</p>`;
+        }
+    }
+
+    // 2. Save Grade
+    window.saveStudentGrade = async function (allocationId, studentId) {
+        const att = document.getElementById(`fac_att_${allocationId}`)?.value;
+        const marks = document.getElementById(`fac_marks_${allocationId}`)?.value;
+
+        try {
+            await updateFacultyGrade(allocationId, att, marks);
+            alert(`Evaluation recorded for ${studentId}: ${att}% attendance, ${marks}/100 internal marks.`);
+            await loadClasses();
+        } catch (err) {
+            alert("Failed to save grade: " + err.message);
+        }
+    };
+
+    // 3. Load Assignments With Live Student Submission Tracking
+    async function loadInstructorAssignments() {
+        const listEl = document.getElementById("activeAssignmentsList");
+        try {
+            const assignments = await fetchFacultyAssignments(currentFaculty.name);
+            listEl.replaceChildren();
+
+            if (!assignments || assignments.length === 0) {
+                listEl.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: #94A3B8; font-size: 13px;">
+                        No active coursework published yet. Create one using the form on the left!
+                    </div>
+                `;
+                return;
+            }
+
+            for (const a of assignments) {
+                let details;
+                try {
+                    details = await fetchAssignmentSubmissionDetails(a.id);
+                } catch {
+                    details = { submissions: [] };
+                }
+
+                const students = details.submissions || [];
+                const submittedCount = students.filter(s => s.is_submitted === 1).length;
+                const totalCount = students.length;
+
+                const item = document.createElement("div");
+                item.className = "assignment-card";
+
+                let studentsListHtml = "";
+                if (students.length === 0) {
+                    studentsListHtml = `<p style="color: #94A3B8; font-size: 12px; margin: 4px 0;">No student enrollments registered for this class yet.</p>`;
+                } else {
+                    studentsListHtml = students.map(s => `
+                        <div class="submission-student-item">
+                            <div>
+                                <strong>${s.student_name}</strong> 
+                                <span style="color: #64748B; font-size: 12px; margin-left: 4px;">(${s.student_id})</span>
+                            </div>
+                            <div>
+                                ${s.is_submitted === 1 
+                                    ? `<span style="background: #ECFDF5; color: #059669; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Completed</span>`
+                                    : `<span style="background: #FEF3C7; color: #D97706; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Pending</span>`
+                                }
+                            </div>
+                        </div>
+                    `).join("");
+                }
+
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                        <div>
+                            <span style="font-size: 11px; background: #EEF2FF; color: #4F46E5; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-right: 6px;">
+                                ${a.course_id}
+                            </span>
+                            <strong style="color: #0F172A; font-size: 14px;">${a.title}</strong>
+                        </div>
+                        <button class="btn-delete" onclick="window.handleDeleteAssignment(${a.id})" style="padding: 4px 10px; font-size: 11px; cursor: pointer; border: none; border-radius: 4px; background: #EF4444; color: #FFFFFF; font-weight: 600;">Remove</button>
+                    </div>
+
+                    <p style="margin: 0 0 10px 0; color: #64748B; font-size: 13px; line-height: 1.4;">${a.description}</p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                            Due: ${a.due_date}
+                        </span>
+                        <span style="font-size: 12px; font-weight: 700; color: ${submittedCount === totalCount && totalCount > 0 ? '#059669' : '#2563EB'};">
+                            ${submittedCount} / ${totalCount} Submitted
+                        </span>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button type="button" class="btn btn-secondary" onclick="window.toggleSubmissionRoster(${a.id})" id="btn_toggle_${a.id}" style="padding: 4px 10px; font-size: 11px; font-weight: 600;">
+                            View Student Submissions (${submittedCount}/${totalCount})
+                        </button>
+                    </div>
+
+                    <div class="submission-roster-box" id="roster_box_${a.id}">
+                        <h4 style="margin: 8px 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748B;">Student Completion Status</h4>
+                        ${studentsListHtml}
+                    </div>
+                `;
+                listEl.appendChild(item);
+            }
+        } catch (err) {
+            listEl.innerHTML = `<p style="color: #EF4444; font-size: 13px;">Failed to load assignments: ${err.message}</p>`;
+        }
+    }
+
+    window.toggleSubmissionRoster = function(assignmentId) {
+        const box = document.getElementById(`roster_box_${assignmentId}`);
+        const btn = document.getElementById(`btn_toggle_${assignmentId}`);
+        if (!box) return;
+
+        if (box.style.display === "none" || box.style.display === "") {
+            box.style.display = "block";
+            if (btn) btn.textContent = "Hide Submissions";
+        } else {
+            box.style.display = "none";
+            if (btn) btn.textContent = "View Student Submissions";
+        }
+    };
+
+    // 4. Publish Course-Specific Assignment
+    document.getElementById("facultyAssignmentForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const rawCourse = document.getElementById("targetCourseSelect").value;
+        const course_id = rawCourse.replace(/[\[\]]/g, "").split(" ")[0].trim().toUpperCase();
+
+        const title = document.getElementById("workTitle").value.trim();
+        const due_date = document.getElementById("dueDate").value;
+        const description = document.getElementById("workDescription").value.trim();
+        const publishBtn = document.getElementById("publishWorkBtn");
+
+        if (!course_id) {
+            alert("Please select a target course for this assignment.");
+            return;
+        }
+
+        publishBtn.disabled = true;
+        publishBtn.textContent = "Publishing...";
+
+        try {
+            const res = await fetch(`${API_BASE}/assignments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    department: currentFaculty.department,
+                    course_id: course_id,
+                    title: title,
+                    description: description,
+                    due_date: due_date,
+                    posted_by: currentFaculty.name
+                })
+            });
+
+            await handleResponse(res, "Failed to publish assignment");
+            alert(`Assignment published for ${course_id}! Only enrolled students will see it.`);
+            document.getElementById("workTitle").value = "";
+            document.getElementById("dueDate").value = "";
+            document.getElementById("workDescription").value = "";
+            await loadInstructorAssignments();
+        } catch (err) {
+            alert("Error: " + err.message);
+        } finally {
+            publishBtn.disabled = false;
+            publishBtn.textContent = "Publish Work to Class";
+        }
+    });
+
+    // 5. Remove Assignment Globally Defined
+    window.handleDeleteAssignment = async function(id) {
+        if (!confirm("Are you sure you want to permanently delete this assignment?")) {
+            return;
+        }
+        try {
+            await removeAssignment(id);
+            alert("Assignment removed successfully.");
+            await loadInstructorAssignments();
+        } catch (err) {
+            alert("Failed to remove assignment: " + err.message);
+        }
+    };
+
+    // 6. Change Password Handler
+    document.getElementById("facultyPasswordForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const currentPassword = document.getElementById("facCurrentPassword").value;
+        const newPassword = document.getElementById("facNewPassword").value;
+        const btn = document.getElementById("facSavePasswordBtn");
+
+        btn.disabled = true;
+        btn.textContent = "Updating...";
+
+        try {
+            await updateFacultyPassword(currentFaculty.username, currentPassword, newPassword);
+            alert("Password updated successfully! Please use your new password next time you sign in.");
+            document.getElementById("facultyPasswordForm").reset();
+        } catch (err) {
+            alert("Password update failed: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Update Password";
+        }
+    });
+
+    // 7. Logout
+    document.getElementById("facultyLogout")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        clearAllSessions();
+        window.location.replace("login.html");
+    });
+</script>
+</body>
+</html>

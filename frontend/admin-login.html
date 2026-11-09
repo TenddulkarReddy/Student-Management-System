@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Console Login | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #0B1329;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .admin-login-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 36px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .privilege-badge {
+            display: inline-block;
+            background: #EFF6FF;
+            color: #1D4ED8;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+        .admin-login-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+            color: #0F172A;
+            font-weight: 700;
+        }
+        .admin-login-card p.subtitle {
+            margin: 0 0 20px 0;
+            color: #64748B;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .form-group input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #0B1329;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            margin-top: 6px;
+        }
+        .btn-submit:hover {
+            background: #1E293B;
+        }
+        .error-banner {
+            display: none;
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 24px;
+            font-size: 13px;
+            color: #64748B;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #0F172A;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-login-card">
+    <div class="privilege-badge">Privileged Access</div>
+    <h2>Administrator Console</h2>
+    <p class="subtitle">Sign in with your Super Admin or Department Coordinator account</p>
+
+    <div class="error-banner" id="adminLoginError"></div>
+
+    <form id="adminLoginForm">
+        <div class="form-group">
+            <label for="adminUsername">Administrator Username</label>
+            <input type="text" id="adminUsername" placeholder="e.g., admin or cse_admin" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-submit" id="adminLoginBtn">Sign In to Console</button>
+    </form>
+
+    <a href="login.html" class="back-link">← Return to Student & Faculty Portal</a>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("adminUsername").value.trim();
+        const password = document.getElementById("adminPassword").value;
+        const btn = document.getElementById("adminLoginBtn");
+        const errorBanner = document.getElementById("adminLoginError");
+
+        errorBanner.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Verifying...";
+
+        try {
+            const data = await loginAdmin(username, password);
+
+            // Store session
+            const adminData = {
+                role: data.role,
+                username: data.username,
+                name: data.name,
+                department: data.department
+            };
+            sessionStorage.setItem("studentHubAdmin", JSON.stringify(adminData));
+
+            // Redirect to Admin Dashboard
+            window.location.replace("index.html");
+        } catch (err) {
+            errorBanner.textContent = err.message || "Invalid administrator credentials";
+            errorBanner.style.display = "block";
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Sign In to Console";
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .profile-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .profile-card span.label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .profile-card p.value {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0F172A;
+            word-break: break-all;
+        }
+
+        .badge-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-eligible { background: #ECFDF5; color: #059669; }
+        .status-warning { background: #FEF3C7; color: #D97706; }
+
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StudentHub</h2>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="students.html">Students</a>
+                <a href="profile.html" class="active">Profile</a>
+                <a href="admin-login.html" id="adminLogout">Log Out</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <p id="sidebarScopeLabel">Admin Operations</p>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Administrator Profile & Settings</h1>
+                <p>Manage account security, department coordinators, and faculty subject appointments</p>
+            </div>
+            <div class="admin-badge" id="profileAdminBadge">Administrator</div>
+        </header>
+
+        <!-- Profile Metadata Cards -->
+        <section class="profile-grid">
+            <div class="profile-card">
+                <span class="label">Full Name</span>
+                <p class="value" id="profileFullName">Loading...</p>
+            </div>
+            <div class="profile-card">
+                <span class="label">Username</span>
+                <p class="value" id="profileUsername">Loading...</p>
+            </div>
+            <div class="profile-card">
+                <span class="label">Role</span>
+                <p class="value" id="profileRole" style="color: #2563EB;">Loading...</p>
+            </div>
+            <div class="profile-card">
+                <span class="label">Jurisdiction</span>
+                <p class="value" id="profileDept" style="color: #059669;">Loading...</p>
+            </div>
+        </section>
+
+        <!-- SUPER ADMIN ONLY: Appoint Faculty Member with Subject -->
+        <section class="dashboard-section" id="createFacultySection">
+            <div class="section-header">
+                <div>
+                    <h2>Appoint New Course Faculty</h2>
+                    <p>Assign professors to their teaching department and designated course subject</p>
+                </div>
+            </div>
+
+            <form id="createFacultyForm">
+                <div class="form-grid-4">
+                    <div class="form-group">
+                        <label for="newFacultyName">Faculty Full Name</label>
+                        <input type="text" id="newFacultyName" placeholder="e.g., Dr. Ananya Sharma" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="newFacultyUsername">Username</label>
+                        <input type="text" id="newFacultyUsername" placeholder="e.g., dr_ananya" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="newFacultyDept">Department</label>
+                        <select id="newFacultyDept" required onchange="populateFacultySubjects(this.value)">
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="ECE">ECE (Electronics & Communication)</option>
+                            <option value="IT">IT (Information Technology)</option>
+                            <option value="MAT">MAT (Mathematics)</option>
+                            <option value="CHM">CHM (Chemistry)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newFacultySubject">Assigned Teaching Subject</label>
+                        <select id="newFacultySubject" required>
+                            <!-- Dynamically populated from course catalog -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="max-width: 320px; margin-bottom: 16px;">
+                    <label for="newFacultyPassword">Default Password</label>
+                    <input type="text" id="newFacultyPassword" placeholder="Default: faculty123" value="faculty123" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="createFacultyBtn" style="padding: 10px 20px; font-weight: 600;">
+                    Appoint Faculty Member
+                </button>
+            </form>
+        </section>
+
+        <!-- SUPER ADMIN ONLY: Faculty Directory Table -->
+        <section class="dashboard-section" id="facultyDirectorySection">
+            <div class="section-header">
+                <div>
+                    <h2>Course Faculty Directory</h2>
+                    <p>Teaching professors, departments, and course subjects</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">Index</th>
+                            <th>Faculty Name</th>
+                            <th>Username</th>
+                            <th>Department</th>
+                            <th>Teaching Subject</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facultyTableBody">
+                        <tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">Loading faculty directory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SUPER ADMIN ONLY: Administrator Directory -->
+        <section class="dashboard-section" id="adminDirectorySection">
+            <div class="section-header">
+                <div>
+                    <h2>Administrator Directory</h2>
+                    <p>Central overview of all administrators and departmental coordinators</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">Index</th>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">Loading administrator directory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SUPER ADMIN ONLY: Create Department Administrator -->
+        <section class="dashboard-section" id="createAdminSection">
+            <div class="section-header">
+                <div>
+                    <h2>Create Department Administrator</h2>
+                    <p>Provision department coordinators (CSE, ECE, IT) to manage their students</p>
+                </div>
+            </div>
+
+            <form id="createAdminForm">
+                <div class="form-grid-4">
+                    <div class="form-group">
+                        <label for="newAdminName">Full Name</label>
+                        <input type="text" id="newAdminName" placeholder="e.g., Dr. Ramesh Sharma" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="newAdminUsername">Username</label>
+                        <input type="text" id="newAdminUsername" placeholder="e.g., it_admin" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="newAdminDept">Department</label>
+                        <select id="newAdminDept" required>
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="ECE">ECE (Electronics & Communication)</option>
+                            <option value="IT">IT (Information Technology)</option>
+                            <option value="MECH">MECH (Mechanical)</option>
+                            <option value="CIVIL">CIVIL (Civil)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newAdminPassword">Default Password</label>
+                        <input type="text" id="newAdminPassword" placeholder="Default: admin123" value="admin123" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="createAdminBtn" style="padding: 10px 20px; font-weight: 600;">
+                    Provision Coordinator Account
+                </button>
+            </form>
+        </section>
+
+        <!-- Account Security / Password Change -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <div>
+                    <h2>Account Security</h2>
+                    <p>Change your administrator password</p>
+                </div>
+            </div>
+
+            <form id="changePasswordForm" style="max-width: 460px;">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password (min. 6 characters)" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="savePasswordBtn" style="padding: 10px 20px; font-weight: 600;">
+                    Update Password
+                </button>
+            </form>
+        </section>
+
+        <footer>
+            <p>© 2026 StudentHub | Academic Management Platform</p>
+        </footer>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    const currentAdmin = JSON.parse(
+        sessionStorage.getItem("studentHubAdmin") || '{"username":"admin","role":"superadmin","department":"ALL"}'
+    );
+    const isSuper = currentAdmin.role === "superadmin" || currentAdmin.department === "ALL" || currentAdmin.username === "admin";
+
+    // Catalog Mapping for Faculty Subject Selection
+    const SUBJECT_CATALOG = {
+        CSE: [
+            "[CSE101] Problem Solving using C",
+            "[CSE102] Digital Logic Design",
+            "[CSE201] Data Structures & Algorithms",
+            "[CSE202] Object-Oriented Programming (Java)",
+            "[CSE301] Database Management Systems",
+            "[CSE302] Operating Systems",
+            "[CSE303] Computer Networks",
+            "[CSE304] Software Engineering",
+            "[CSE401] Cloud Computing & Architecture",
+            "[CSE402] Artificial Intelligence & ML"
+        ],
+        ECE: [
+            "[ECE101] Basic Electrical & Electronics",
+            "[ECE201] Signals & Systems",
+            "[ECE202] Electronic Devices & Circuits",
+            "[ECE203] Digital System Design (Verilog)",
+            "[ECE301] Microprocessors & Microcontrollers",
+            "[ECE302] Analog & Digital Communication",
+            "[ECE401] VLSI Design & Embedded Systems"
+        ],
+        IT: [
+            "[IT101] Foundations of Computing",
+            "[IT201] Data Structures & Algorithms",
+            "[IT202] Database Management & SQL",
+            "[IT301] Full Stack Web Engineering",
+            "[IT302] Information Security",
+            "[IT401] Distributed Systems & Microservices"
+        ],
+        MAT: [
+            "[MAT101] Calculus & Linear Algebra",
+            "[MAT201] Discrete Mathematics",
+            "[MAT202] Probability & Random Processes"
+        ],
+        CHM: [
+            "[CHM101] Engineering Chemistry"
+        ]
+    };
+
+    function populateFacultySubjects(dept) {
+        const subSelect = document.getElementById("newFacultySubject");
+        if (!subSelect) return;
+        subSelect.replaceChildren();
+
+        const subjects = SUBJECT_CATALOG[dept] || ["General Department Studies"];
+        subjects.forEach(sub => {
+            const opt = document.createElement("option");
+            opt.value = sub;
+            opt.textContent = sub;
+            subSelect.appendChild(opt);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Set top profile details
+        document.getElementById("profileFullName").textContent = currentAdmin.name || "System Administrator";
+        document.getElementById("profileUsername").textContent = currentAdmin.username;
+        document.getElementById("profileRole").textContent = isSuper ? "Central Super Administrator" : "Department Administrator";
+        document.getElementById("profileDept").textContent = isSuper ? "All Departments" : `${currentAdmin.department} Department`;
+        
+        document.getElementById("profileAdminBadge").textContent = isSuper ? "Super Admin" : `${currentAdmin.department} Admin`;
+        document.getElementById("sidebarScopeLabel").textContent = isSuper ? "Central Super Admin" : `${currentAdmin.department} Coordinator`;
+
+        // 2. Hide Super Admin management blocks from Dept Coordinators
+        const facultySection = document.getElementById("createFacultySection");
+        const facultyDirSection = document.getElementById("facultyDirectorySection");
+        const adminSection = document.getElementById("createAdminSection");
+        const adminDirSection = document.getElementById("adminDirectorySection");
+
+        if (!isSuper) {
+            if (facultySection) facultySection.style.display = "none";
+            if (facultyDirSection) facultyDirSection.style.display = "none";
+            if (adminSection) adminSection.style.display = "none";
+            if (adminDirSection) adminDirSection.style.display = "none";
+        } else {
+            populateFacultySubjects("CSE");
+            loadFacultyDirectory();
+            loadAdminDirectory();
+        }
+    });
+
+    // ----------------------------------------------------
+    // FACULTY MANAGEMENT (SUPER ADMIN)
+    // ----------------------------------------------------
+    async function loadFacultyDirectory() {
+        const tableBody = document.getElementById("facultyTableBody");
+        if (!tableBody) return;
+
+        try {
+            const facultyList = await fetchAllFaculty();
+            tableBody.replaceChildren();
+
+            if (!facultyList || facultyList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">No faculty registered.</td></tr>`;
+                return;
+            }
+
+            facultyList.forEach((fac, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong style="color: #475569;">#${index + 1}</strong></td>
+                    <td><strong>${fac.name}</strong></td>
+                    <td><code>${fac.username}</code></td>
+                    <td><span class="dept-pill">${fac.department}</span></td>
+                    <td><strong style="color: #2563EB; font-size: 13px;">${fac.subject || 'General'}</strong></td>
+                    <td style="text-align: right;">
+                        <button class="btn-delete" onclick="handleDeleteFaculty(${fac.id}, '${fac.name}')" style="padding: 4px 10px; font-size: 12px;">Remove</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        } catch (err) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #EF4444; padding: 20px;">Error: ${err.message}</td></tr>`;
+        }
+    }
+
+    document.getElementById("createFacultyForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("newFacultyName").value.trim();
+        const username = document.getElementById("newFacultyUsername").value.trim().toLowerCase();
+        const department = document.getElementById("newFacultyDept").value;
+        const subject = document.getElementById("newFacultySubject").value;
+        const password = document.getElementById("newFacultyPassword").value.trim();
+        const btn = document.getElementById("createFacultyBtn");
+
+        btn.disabled = true;
+        btn.textContent = "Appointing...";
+
+        try {
+            await createFaculty(username, password, name, department, subject);
+            alert(`Faculty member '${name}' appointed to teach ${subject}!`);
+            document.getElementById("createFacultyForm").reset();
+            document.getElementById("newFacultyPassword").value = "faculty123";
+            populateFacultySubjects("CSE");
+            await loadFacultyDirectory();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Appoint Faculty Member";
+        }
+    });
+
+    window.handleDeleteFaculty = async function(id, name) {
+        if (!confirm(`Are you sure you want to remove faculty member '${name}'?`)) return;
+        try {
+            await removeFaculty(id);
+            alert(`Faculty member '${name}' removed.`);
+            await loadFacultyDirectory();
+        } catch (err) {
+            alert("Failed to delete faculty: " + err.message);
+        }
+    };
+
+    // ----------------------------------------------------
+    // COORDINATOR DIRECTORY (SUPER ADMIN)
+    // ----------------------------------------------------
+    async function loadAdminDirectory() {
+        const tableBody = document.getElementById("adminTableBody");
+        const deptSelect = document.getElementById("newAdminDept");
+        if (!tableBody) return;
+
+        try {
+            const admins = await fetchAllAdmins();
+            tableBody.replaceChildren();
+
+            if (!admins || admins.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">No administrators registered.</td></tr>`;
+                return;
+            }
+
+            const assignedDepts = new Set();
+
+            admins.forEach((admin, index) => {
+                const tr = document.createElement("tr");
+                const isRoot = admin.username === "admin";
+                const displayIndex = `#${index + 1}`;
+
+                if (!isRoot && admin.department && admin.department !== "ALL") {
+                    assignedDepts.add(admin.department.toUpperCase());
+                }
+
+                tr.innerHTML = `
+                    <td><strong style="color: #475569;">${displayIndex}</strong></td>
+                    <td><strong>${admin.name}</strong></td>
+                    <td><code>${admin.username}</code></td>
+                    <td><span class="dept-pill">${admin.department}</span></td>
+                    <td>
+                        <span class="badge-status ${isRoot ? 'status-eligible' : 'status-warning'}">
+                            ${isRoot ? 'Super Admin' : 'Dept Admin'}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        ${isRoot 
+                            ? '<span style="color: #94A3B8; font-size: 12px; font-weight: 600;">Primary Root</span>' 
+                            : `<button class="btn-delete" onclick="handleDeleteAdmin(${admin.id}, '${admin.username}')" style="padding: 4px 10px; font-size: 12px;">Remove</button>`
+                        }
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            if (deptSelect) {
+                const originalLabels = {
+                    CSE: "CSE (Computer Science)",
+                    ECE: "ECE (Electronics & Communication)",
+                    IT: "IT (Information Technology)",
+                    MECH: "MECH (Mechanical)",
+                    CIVIL: "CIVIL (Civil)"
+                };
+
+                Array.from(deptSelect.options).forEach((opt) => {
+                    const deptCode = opt.value.toUpperCase();
+                    if (assignedDepts.has(deptCode)) {
+                        opt.disabled = true;
+                        opt.textContent = `${deptCode} (Already Assigned)`;
+                    } else {
+                        opt.disabled = false;
+                        opt.textContent = originalLabels[deptCode] || deptCode;
+                    }
+                });
+
+                const firstAvailable = Array.from(deptSelect.options).find(opt => !opt.disabled);
+                if (firstAvailable) deptSelect.value = firstAvailable.value;
+            }
+
+        } catch (err) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #EF4444; padding: 20px;">Error: ${err.message}</td></tr>`;
+        }
+    }
+
+    document.getElementById("createAdminForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("newAdminName").value.trim();
+        const username = document.getElementById("newAdminUsername").value.trim().toLowerCase();
+        const department = document.getElementById("newAdminDept").value;
+        const password = document.getElementById("newAdminPassword").value.trim();
+        const btn = document.getElementById("createAdminBtn");
+
+        btn.disabled = true;
+        btn.textContent = "Creating...";
+
+        try {
+            await createAdmin(username, password, name, department);
+            alert(`Coordinator account '${username}' created successfully for ${department}!`);
+            document.getElementById("createAdminForm").reset();
+            document.getElementById("newAdminPassword").value = "admin123";
+            await loadAdminDirectory();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Provision Coordinator Account";
+        }
+    });
+
+    window.handleDeleteAdmin = async function(id, username) {
+        if (!confirm(`Are you sure you want to remove administrator account '${username}'?`)) return;
+        try {
+            await removeAdmin(id);
+            alert(`Account '${username}' deleted.`);
+            await loadAdminDirectory();
+        } catch (err) {
+            alert("Failed to delete admin: " + err.message);
+        }
+    };
+
+    // ----------------------------------------------------
+    // PASSWORD UPDATE & LOGOUT
+    // ----------------------------------------------------
+    document.getElementById("changePasswordForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const currentPassword = document.getElementById("currentPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const btn = document.getElementById("savePasswordBtn");
+
+        btn.disabled = true;
+        btn.textContent = "Updating...";
+
+        try {
+            await updateAdminPassword(currentAdmin.username, currentPassword, newPassword);
+            alert("Password updated successfully!");
+            document.getElementById("changePasswordForm").reset();
+        } catch (err) {
+            alert("Password update failed: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Update Password";
+        }
+    });
+
+    document.getElementById("adminLogout")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        clearAllSessions();
+        window.location.replace("admin-login.html");
+    });
+</script>
+</body>
+</html>

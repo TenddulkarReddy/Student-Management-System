@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+        .status-eligible { background: #ECFDF5; color: #059669; }
+        .status-shortage { background: #FEE2E2; color: #DC2626; }
+        .status-warning { background: #FEF3C7; color: #D97706; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StudentHub</h2>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="students.html" class="active">Students</a>
+                <a href="profile.html">Profile</a>
+                <a href="login.html" id="adminLogout">Log Out</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <p id="sidebarScopeLabel">Admin Operations</p>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1 id="studentsPageTitle">Department Academic Standing & Cohort</h1>
+                <p id="studentsPageSubtitle">Monitor student enrollment, cumulative CGPA from faculty, and attendance eligibility</p>
+            </div>
+            <div class="admin-badge" id="studentsAdminBadge">Administrator</div>
+        </header>
+
+        <!-- View Switcher Tabs -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button type="button" id="tabRosterBtn" class="btn btn-primary" onclick="switchView('roster')" style="padding: 10px 20px; font-weight: 600;">
+                Cohort Academic Standing
+            </button>
+            <button type="button" id="tabAllocBtn" class="btn" onclick="switchView('allocations')" style="padding: 10px 20px; font-weight: 600; background: #F1F5F9; color: #0F172A; border: 1px solid #CBD5E1;">
+                Faculty & Year Allocations
+            </button>
+        </div>
+
+        <!-- VIEW 1: Department Overview Table (Auto-Aggregated from Faculty Evaluations) -->
+        <div id="rosterViewContainer">
+            <!-- SUPER ADMIN ONLY: Enroll Student Form (Lives only in Cohort tab) -->
+            <section class="dashboard-section" id="addStudentCard">
+                <div class="section-header">
+                    <div>
+                        <h2>Enroll New Student</h2>
+                        <p>Allocate a department-specific sequential ID automatically</p>
+                    </div>
+                </div>
+
+                <form id="studentForm" class="student-form-grid">
+                    <div class="form-group">
+                        <label for="studentName">Student Full Name</label>
+                        <input type="text" id="studentName" placeholder="Enter student name" required autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="">Select department</option>
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="ECE">ECE (Electronics & Communication)</option>
+                            <option value="IT">IT (Information Technology)</option>
+                            <option value="MECH">MECH (Mechanical)</option>
+                            <option value="CIVIL">CIVIL (Civil)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year</label>
+                        <select id="academicYear" required>
+                            <option value="">Select year</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentPassword">Default Password</label>
+                        <input type="text" id="studentPassword" placeholder="Default: student123">
+                    </div>
+
+                    <div class="form-actions" style="grid-column: span 2;">
+                        <button type="submit" class="btn btn-primary">Enroll Student</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Student Academic Performance & Attendance Status</h2>
+                        <p id="studentCountLabel">Showing registered cohort</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="searchInput" placeholder="Search by name or ID..." style="padding: 8px 14px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 14px;">
+                        <select id="deptFilterOverview" style="padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 14px;">
+                            <option value="ALL">All Departments</option>
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="IT">IT</option>
+                            <option value="MECH">MECH</option>
+                            <option value="CIVIL">CIVIL</option>
+                        </select>
+                        <select id="yearFilterOverview" style="padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 14px;">
+                            <option value="ALL">All Cohort Years</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Year</th>
+                                <th>Registered Credits</th>
+                                <th>Overall Attendance</th>
+                                <th>Cumulative CGPA</th>
+                                <th>Exam Eligibility</th>
+                                <th id="actionHeader" style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTable">
+                            <tr><td colspan="8" style="text-align: center; color: #94A3B8; padding: 24px;">Loading academic summary...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: Segregated Faculty & Year Allocations -->
+        <div id="allocationsViewContainer" style="display: none;">
+            <div style="display: flex; gap: 12px; align-items: center; background: #FFFFFF; padding: 14px 18px; border-radius: 10px; border: 1px solid #E2E8F0; margin-bottom: 20px;">
+                <label style="font-weight: 600; font-size: 14px; color: #475569;">Segregate By Year:</label>
+                <select id="allocYearFilter" style="padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <option value="ALL">All Academic Years</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                </select>
+
+                <label style="font-weight: 600; font-size: 14px; color: #475569; margin-left: 12px;">Filter Faculty:</label>
+                <select id="allocFacultyFilter" style="padding: 8px 12px; border: 1px solid #CBD5E1; border-radius: 6px;">
+                    <option value="ALL">All Faculty Members</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Segregated Faculty & Year Cards -->
+            <div id="allocationsCardContainer">
+                <p style="color: #94A3B8;">Loading faculty allocations...</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 StudentHub | Academic Management Platform</p>
+        </footer>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/students.js"></script>
+<script>
+    const admin = JSON.parse(sessionStorage.getItem("studentHubAdmin") || '{}');
+    const isSuper = admin.role === "superadmin" || admin.department === "ALL" || admin.username === "admin";
+    
+    document.getElementById("studentsAdminBadge").textContent = isSuper ? "Super Admin" : `${admin.department} Admin`;
+    document.getElementById("sidebarScopeLabel").textContent = isSuper ? "Central Super Admin" : `${admin.department} Coordinator`;
+    if (!isSuper) {
+        document.getElementById("studentsPageTitle").textContent = `${admin.department} Academic Standing & Monitoring`;
+    }
+
+    document.getElementById("adminLogout")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        clearAllSessions();
+        window.location.replace("login.html");
+    });
+</script>
+</body>
+</html>

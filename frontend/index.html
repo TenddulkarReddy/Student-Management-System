@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .admin-kpi-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .admin-kpi-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-kpi-card .value {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .admin-kpi-card .subtext {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-top: 4px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="logo">StudentHub</h2>
+            <nav>
+                <a href="index.html" class="active">Dashboard</a>
+                <a href="students.html">Students</a>
+                <a href="profile.html">Profile</a>
+                <a href="admin-login.html" id="adminLogout">Log Out</a>
+            </nav>
+        </div>
+        <div class="sidebar-bottom">
+            <p id="sidebarScopeLabel">Admin Operations</p>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1 id="dashboardWelcomeTitle">Academic Operations Dashboard</h1>
+                <p id="dashboardWelcomeSubtitle">Manage department cohorts, enrollment, and curriculum monitoring</p>
+            </div>
+            <div class="admin-badge" id="adminRoleBadge">Administrator</div>
+        </header>
+
+        <!-- KPI Cards (Side-by-side Row) -->
+        <section class="admin-kpi-grid">
+            <div class="admin-kpi-card">
+                <h3>Total Students</h3>
+                <p class="value" id="kpiTotalStudents" style="color: #2563EB;">0</p>
+                <span class="subtext">Registered cohort</span>
+            </div>
+            <div class="admin-kpi-card">
+                <h3>Department Jurisdiction</h3>
+                <p class="value" id="kpiDeptScope" style="color: #0F172A;">CSE</p>
+                <span class="subtext">Assigned scope</span>
+            </div>
+            <div class="admin-kpi-card">
+                <h3>System Status</h3>
+                <p class="value" style="color: #059669;">Live</p>
+                <span class="subtext">SQLite Active</span>
+            </div>
+        </section>
+
+        <!-- Enrolled Students Table -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <div>
+                    <h2>Enrolled Students</h2>
+                    <p>Student roster</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" id="exportCsvBtn" style="background: #10B981; color: white; border: none; cursor: pointer; padding: 8px 16px; border-radius: 6px; font-weight: 600;">
+                        Export CSV
+                    </button>
+                    <a href="students.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 6px; font-weight: 600;">
+                        Manage Roster
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Academic Year</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardStudentTable">
+                        <tr><td colspan="4" style="text-align: center; color: #94A3B8; padding: 20px;">Loading student records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 StudentHub | Academic Management Platform</p>
+        </footer>
+    </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+    document.getElementById("adminLogout")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        clearAllSessions();
+        window.location.replace("admin-login.html");
+    });
+</script>
+</body>
+</html>

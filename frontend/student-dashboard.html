@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Academic Portal | StudentHub</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .student-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .student-kpi-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px 22px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .student-kpi-card h3 {
+        margin: 0 0 6px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .student-kpi-card .value {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .student-kpi-card .subtext {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 4px;
+        display: block;
+      }
+
+      .tab-switcher-nav {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .tab-nav-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.15s ease;
+      }
+      .tab-nav-btn.active {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      }
+      .tab-nav-btn.inactive {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+      }
+      .tab-nav-btn.inactive:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .badge-status {
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .status-eligible {
+        background: #ecfdf5;
+        color: #059669;
+      }
+      .status-danger {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .assignment-task-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .assignment-task-card:hover {
+        border-color: #cbd5e1;
+      }
+
+      /* Course Registration Layout with Faculty Select */
+      .course-select-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        gap: 16px;
+      }
+      .course-left-info {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: 1.2;
+      }
+      .course-faculty-picker {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+      }
+      .course-faculty-picker label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        white-space: nowrap;
+      }
+      .faculty-dropdown {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #0f172a;
+        background: #ffffff;
+        outline: none;
+        cursor: pointer;
+      }
+      .faculty-dropdown:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+      .faculty-dropdown:disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+        border-color: #e2e8f0;
+      }
+
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 5px;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+      }
+      .form-group input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div>
+          <h2 class="logo">StudentHub</h2>
+          <nav>
+            <a href="student-dashboard.html" class="active"
+              >Student Workspace</a
+            >
+            <a href="login.html" id="studentLogout">Log Out</a>
+          </nav>
+        </div>
+        <div class="sidebar-bottom">
+          <p id="studentDeptYearLabel">Student Portal</p>
+        </div>
+      </aside>
+
+      <!-- Main Workspace -->
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <h1 id="studentWelcomeTitle">Welcome, Student</h1>
+            <p>
+              Personal academic performance, subject attendance, coursework
+              submissions, and registrations
+            </p>
+          </div>
+          <div
+            class="admin-badge"
+            id="studentIdBadge"
+            style="background: #ecfdf5; color: #059669"
+          >
+            STUDENT
+          </div>
+        </header>
+
+        <!-- KPI Metrics -->
+        <section class="student-kpi-grid">
+          <div class="student-kpi-card">
+            <h3>Overall CGPA</h3>
+            <p class="value" id="kpiStudentCgpa" style="color: #2563eb">0.00</p>
+            <span class="subtext">Scale 10.0</span>
+          </div>
+          <div class="student-kpi-card">
+            <h3>Aggregate Attendance</h3>
+            <p class="value" id="kpiStudentAttendance" style="color: #059669">
+              0%
+            </p>
+            <span class="subtext" id="kpiEligibilityText"
+              >Checking status...</span
+            >
+          </div>
+          <div class="student-kpi-card">
+            <h3>Registered Credits</h3>
+            <p class="value" id="kpiRegisteredCredits" style="color: #0f172a">
+              0
+            </p>
+            <span class="subtext">Min: 14 | Max: 20</span>
+          </div>
+          <div class="student-kpi-card">
+            <h3>Pending Assignments</h3>
+            <p class="value" id="kpiPendingAssignments" style="color: #d97706">
+              0
+            </p>
+            <span class="subtext">Coursework Submissions</span>
+          </div>
+        </section>
+
+        <!-- View Switcher Tabs -->
+        <div class="tab-switcher-nav">
+          <button
+            type="button"
+            id="tabAcademicsBtn"
+            class="tab-nav-btn active"
+            onclick="switchStudentTab('academics')"
+          >
+            Enrolled Subjects & Grades
+          </button>
+          <button
+            type="button"
+            id="tabCourseworkBtn"
+            class="tab-nav-btn inactive"
+            onclick="switchStudentTab('coursework')"
+          >
+            Assigned Work & Labs
+          </button>
+          <button
+            type="button"
+            id="tabRegistrationBtn"
+            class="tab-nav-btn inactive"
+            onclick="switchStudentTab('registration')"
+          >
+            Course Registration
+          </button>
+          <button
+            type="button"
+            id="tabSecurityBtn"
+            class="tab-nav-btn inactive"
+            onclick="switchStudentTab('security')"
+          >
+            Account Security
+          </button>
+        </div>
+
+        <!-- VIEW 1: Enrolled Subjects & Grades -->
+        <div id="viewAcademics">
+          <section class="dashboard-section">
+            <div class="section-header">
+              <div>
+                <h2>Current Semester Subject Rosters</h2>
+                <p>
+                  Real-time subject attendance, internal marks, and assigned
+                  course mentors
+                </p>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Course Code</th>
+                    <th>Subject Title</th>
+                    <th>Credits</th>
+                    <th>Course Faculty</th>
+                    <th>Attendance</th>
+                    <th>Internal Marks</th>
+                  </tr>
+                </thead>
+                <tbody id="studentCoursesTable">
+                  <tr>
+                    <td
+                      colspan="6"
+                      style="text-align: center; color: #94a3b8; padding: 20px"
+                    >
+                      Loading courses...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- VIEW 2: Course-Specific Assignments & Labs -->
+        <div id="viewCoursework" style="display: none">
+          <section class="dashboard-section">
+            <div class="section-header">
+              <div>
+                <h2>Course Work & Lab Submissions</h2>
+                <p>
+                  Tasks assigned exclusively to your registered classes by
+                  course instructors
+                </p>
+              </div>
+            </div>
+
+            <div id="studentAssignmentsContainer">
+              <p style="color: #94a3b8; padding: 20px 0">
+                Loading assignments...
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- VIEW 3: Course Registration with Faculty Selection -->
+        <div id="viewRegistration" style="display: none">
+          <section class="dashboard-section">
+            <div class="section-header">
+              <div>
+                <h2>Semester Curriculum Registration</h2>
+                <p>
+                  Select your semester subjects and choose your preferred course
+                  faculty (Must be between 14 and 20 credits)
+                </p>
+              </div>
+              <div style="font-weight: 700; color: #2563eb; font-size: 15px">
+                Selected: <span id="registrationCreditCounter">0</span> / 20
+                Credits
+              </div>
+            </div>
+
+            <form id="courseRegistrationForm">
+              <div id="catalogCoursesContainer" style="margin-bottom: 20px">
+                <p style="color: #94a3b8; padding: 10px 0">
+                  Loading curriculum catalog...
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="saveRegistrationBtn"
+                style="padding: 11px 24px; font-weight: 600"
+              >
+                Confirm & Save Course Registrations
+              </button>
+            </form>
+          </section>
+        </div>
+
+        <!-- VIEW 4: Account Security -->
+        <div id="viewSecurity" style="display: none">
+          <section class="dashboard-section" style="max-width: 500px">
+            <div class="section-header">
+              <div>
+                <h2>Change Student Password</h2>
+                <p>Set a custom, private password for your student portal</p>
+              </div>
+            </div>
+
+            <form id="studentPasswordForm">
+              <div class="form-group">
+                <label for="studentCurrentPwd">Current Password</label>
+                <input
+                  type="password"
+                  id="studentCurrentPwd"
+                  placeholder="Default: student123"
+                  required
+                  autocomplete="current-password"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="studentNewPwd">New Password</label>
+                <input
+                  type="password"
+                  id="studentNewPwd"
+                  placeholder="Enter new password (min. 6 characters)"
+                  required
+                  minlength="6"
+                  autocomplete="new-password"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="saveStudentPwdBtn"
+                style="padding: 10px 20px; font-weight: 600"
+              >
+                Update Password
+              </button>
+            </form>
+          </section>
+        </div>
+
+        <footer>
+          <p>© 2026 StudentHub | Academic Management Platform</p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+      const currentStudent = getLoggedInStudent();
+
+      if (!currentStudent || !currentStudent.id) {
+        alert("Session expired. Please sign in via the Academic Portal.");
+        window.location.replace("login.html");
+      }
+
+      document.getElementById("studentWelcomeTitle").textContent =
+        `Welcome, ${currentStudent.name}`;
+      document.getElementById("studentIdBadge").textContent = currentStudent.id;
+      document.getElementById("studentDeptYearLabel").textContent =
+        `${currentStudent.department} · ${currentStudent.year}`;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadStudentDashboard();
+        loadStudentAssignments();
+        loadCourseRegistrationCatalog();
+      });
+
+      window.switchStudentTab = function (tabName) {
+        const viewAcademics = document.getElementById("viewAcademics");
+        const viewCoursework = document.getElementById("viewCoursework");
+        const viewRegistration = document.getElementById("viewRegistration");
+        const viewSecurity = document.getElementById("viewSecurity");
+
+        const tabAcademicsBtn = document.getElementById("tabAcademicsBtn");
+        const tabCourseworkBtn = document.getElementById("tabCourseworkBtn");
+        const tabRegistrationBtn =
+          document.getElementById("tabRegistrationBtn");
+        const tabSecurityBtn = document.getElementById("tabSecurityBtn");
+
+        viewAcademics.style.display =
+          tabName === "academics" ? "block" : "none";
+        viewCoursework.style.display =
+          tabName === "coursework" ? "block" : "none";
+        viewRegistration.style.display =
+          tabName === "registration" ? "block" : "none";
+        viewSecurity.style.display = tabName === "security" ? "block" : "none";
+
+        tabAcademicsBtn.className = `tab-nav-btn ${tabName === "academics" ? "active" : "inactive"}`;
+        tabCourseworkBtn.className = `tab-nav-btn ${tabName === "coursework" ? "active" : "inactive"}`;
+        tabRegistrationBtn.className = `tab-nav-btn ${tabName === "registration" ? "active" : "inactive"}`;
+        tabSecurityBtn.className = `tab-nav-btn ${tabName === "security" ? "active" : "inactive"}`;
+
+        if (tabName === "academics") loadStudentDashboard();
+        if (tabName === "coursework") loadStudentAssignments();
+      };
+
+      // 1. Load Academic Performance & Enrolled Subjects
+      async function loadStudentDashboard() {
+        const tableBody = document.getElementById("studentCoursesTable");
+        try {
+          const summary = await fetchStudentAcademicSummary(currentStudent.id);
+
+          document.getElementById("kpiStudentCgpa").textContent = summary.cgpa;
+          document.getElementById("kpiStudentAttendance").textContent =
+            `${summary.attendance}%`;
+          document.getElementById("kpiRegisteredCredits").textContent =
+            summary.totalCredits;
+
+          const eligText = document.getElementById("kpiEligibilityText");
+          if (summary.attendance >= 75) {
+            eligText.textContent = "Eligible for End-Sem Exams";
+            eligText.style.color = "#059669";
+          } else {
+            eligText.textContent = "Low Attendance (<75%)";
+            eligText.style.color = "#DC2626";
+          }
+
+          tableBody.replaceChildren();
+
+          if (!summary.courses || summary.courses.length === 0) {
+            tableBody.innerHTML = `
+                    <tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 24px;">
+                        No courses registered for this semester yet. Switch to the <strong>Course Registration</strong> tab to enroll.
+                    </td></tr>
+                `;
+            return;
+          }
+
+          summary.courses.forEach((c) => {
+            const tr = document.createElement("tr");
+            const att = c.course_attendance !== null ? c.course_attendance : 85;
+            const marks = c.course_marks !== null ? c.course_marks : 80;
+
+            tr.innerHTML = `
+                    <td><strong>${c.course_id}</strong></td>
+                    <td>${c.course_name}</td>
+                    <td><span class="dept-pill">${c.credits} Credits</span></td>
+                    <td><strong style="color: #2563EB;">${c.faculty || "Unassigned"}</strong></td>
+                    <td>
+                        <strong style="color: ${att >= 75 ? "#059669" : "#DC2626"};">${att}%</strong>
+                    </td>
+                    <td>
+                        <span class="badge-status ${marks >= 50 ? "status-eligible" : "status-danger"}">
+                            ${marks} / 100
+                        </span>
+                    </td>
+                `;
+            tableBody.appendChild(tr);
+          });
+        } catch (err) {
+          tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #DC2626; padding: 20px;">Error: ${err.message}</td></tr>`;
+        }
+      }
+
+      // 2. Load Course-Scoped Assignments with Submission Status
+      async function loadStudentAssignments() {
+        const container = document.getElementById(
+          "studentAssignmentsContainer",
+        );
+        const kpiPending = document.getElementById("kpiPendingAssignments");
+        if (!container) return;
+
+        try {
+          const [assignments, submissions] = await Promise.all([
+            fetchStudentAssignments(currentStudent.id),
+            fetchStudentSubmissions(currentStudent.id),
+          ]);
+
+          const completedMap = new Map();
+          (submissions || []).forEach((s) => {
+            completedMap.set(s.assignment_id, s.submitted_at);
+          });
+
+          // Compute Pending count (Total assigned minus Completed)
+          const pendingCount = (assignments || []).filter(
+            (a) => !completedMap.has(a.id),
+          ).length;
+          if (kpiPending) {
+            kpiPending.textContent = pendingCount;
+          }
+
+          container.replaceChildren();
+
+          if (!assignments || assignments.length === 0) {
+            container.innerHTML = `
+                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 28px; text-align: center; color: #64748B; font-size: 14px;">
+                    No coursework or lab exercises currently assigned to your enrolled subjects.
+                </div>
+            `;
+            return;
+          }
+
+          assignments.forEach((a) => {
+            const isCompleted = completedMap.has(a.id);
+            const card = document.createElement("div");
+            card.className = "assignment-task-card";
+            card.style.cssText =
+              "background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);";
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 11px; background: #EEF2FF; color: #4F46E5; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                            ${a.course_id}
+                        </span>
+                        <strong style="color: #0F172A; font-size: 15px;">${a.title}</strong>
+                        ${
+                          isCompleted
+                            ? `<span style="background: #ECFDF5; color: #059669; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Completed</span>`
+                            : `<span style="background: #FEF3C7; color: #D97706; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Pending</span>`
+                        }
+                    </div>
+                    <span style="font-size: 12px; background: #FEF3C7; color: #B45309; padding: 3px 10px; border-radius: 4px; font-weight: 600;">
+                        Due: ${a.due_date}
+                    </span>
+                </div>
+                <p style="margin: 0 0 12px 0; color: #475569; font-size: 13px; line-height: 1.5;">${a.description}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 10px;">
+                    <span style="font-size: 12px; color: #94A3B8;">Posted by: <strong>${a.posted_by}</strong></span>
+                    ${
+                      isCompleted
+                        ? `<button class="btn btn-sm" disabled style="background: #E2E8F0; color: #64748B; cursor: default; padding: 6px 14px; font-size: 12px; border-radius: 6px; border: none; font-weight: 600;">Submitted</button>`
+                        : `<button class="btn btn-sm btn-primary" onclick="handleCompleteAssignment(${a.id})" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; font-weight: 600;">Mark as Completed</button>`
+                    }
+                </div>
+            `;
+            container.appendChild(card);
+          });
+        } catch (err) {
+          container.innerHTML = `<p style="color: #EF4444; padding: 16px;">Failed to load assignments: ${err.message}</p>`;
+        }
+      }
+
+      window.handleCompleteAssignment = async function (assignmentId) {
+        if (!confirm("Are you sure you want to mark this task as completed?"))
+          return;
+        try {
+          await submitAssignment(assignmentId, currentStudent.id);
+          alert("Assignment marked as completed!");
+          await loadStudentAssignments();
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      // 3. Course Registration with Faculty Dropdowns
+      let catalogCourses = [];
+      async function loadCourseRegistrationCatalog() {
+        const container = document.getElementById("catalogCoursesContainer");
+        try {
+          const [catalog, enrolled] = await Promise.all([
+            fetchCatalogCourses(currentStudent.department, currentStudent.year),
+            fetchStudentRegisteredCourses(currentStudent.id),
+          ]);
+
+          catalogCourses = catalog || [];
+
+          // Map existing enrolled course IDs to previously chosen faculty
+          const enrolledMap = new Map();
+          (enrolled || []).forEach((e) => {
+            enrolledMap.set(e.course_id, e.faculty);
+          });
+
+          container.replaceChildren();
+
+          if (catalogCourses.length === 0) {
+            container.innerHTML = `<p style="color: #64748B;">No catalog subjects configured for ${currentStudent.department} (${currentStudent.year}).</p>`;
+            return;
+          }
+
+          catalogCourses.forEach((c) => {
+            const isChecked = enrolledMap.has(c.id);
+            const assignedFaculty = enrolledMap.get(c.id);
+
+            const row = document.createElement("div");
+            row.className = "course-select-row";
+
+            const facultyOptions = Array.isArray(c.faculty)
+              ? c.faculty
+              : [c.faculty || "Department Panel"];
+            let optionsHtml = facultyOptions
+              .map((f) => {
+                const isSelected =
+                  assignedFaculty &&
+                  assignedFaculty.trim().toLowerCase() ===
+                    f.trim().toLowerCase();
+                return `<option value="${f}" ${isSelected ? "selected" : ""}>${f}</option>`;
+              })
+              .join("");
+
+            row.innerHTML = `
+                    <div class="course-left-info">
+                        <input type="checkbox" class="course-checkbox" id="chk_${c.id}" value="${c.id}" data-credits="${c.credits}" ${isChecked ? "checked" : ""} onchange="handleCourseToggle('${c.id}')">
+                        <div>
+                            <strong style="color: #0F172A; font-size: 14px;">[${c.id}] ${c.name}</strong>
+                            <span class="dept-pill" style="margin-left: 8px;">${c.credits} Credits</span>
+                        </div>
+                    </div>
+                    <div class="course-faculty-picker">
+                        <label for="fac_select_${c.id}">Faculty:</label>
+                        <select class="faculty-dropdown" id="fac_select_${c.id}" ${isChecked ? "" : "disabled"}>
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                `;
+            container.appendChild(row);
+          });
+
+          updateCreditCounter();
+        } catch (err) {
+          container.innerHTML = `<p style="color: #EF4444;">Failed to load catalog: ${err.message}</p>`;
+        }
+      }
+
+      window.handleCourseToggle = function (courseId) {
+        const checkbox = document.getElementById(`chk_${courseId}`);
+        const dropdown = document.getElementById(`fac_select_${courseId}`);
+        if (checkbox && dropdown) {
+          dropdown.disabled = !checkbox.checked;
+        }
+        updateCreditCounter();
+      };
+
+      window.updateCreditCounter = function () {
+        const checkboxes = document.querySelectorAll(
+          ".course-checkbox:checked",
+        );
+        let total = 0;
+        checkboxes.forEach((cb) => {
+          total += parseInt(cb.dataset.credits, 10) || 0;
+        });
+        const counter = document.getElementById("registrationCreditCounter");
+        if (counter) counter.textContent = total;
+      };
+
+      document
+        .getElementById("courseRegistrationForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const checked = Array.from(
+            document.querySelectorAll(".course-checkbox:checked"),
+          );
+
+          const selected = checked.map((cb) => {
+            const courseObj = catalogCourses.find((c) => c.id === cb.value);
+            const chosenFaculty =
+              document.getElementById(`fac_select_${cb.value}`)?.value ||
+              "Unassigned";
+
+            return {
+              id: courseObj.id,
+              name: courseObj.name,
+              credits: courseObj.credits,
+              faculty: chosenFaculty,
+            };
+          });
+
+          const totalCredits = selected.reduce((sum, c) => sum + c.credits, 0);
+          if (totalCredits < 14 || totalCredits > 20) {
+            alert(
+              `Selected ${totalCredits} credits. University regulations require between 14 and 20 credits.`,
+            );
+            return;
+          }
+
+          const btn = document.getElementById("saveRegistrationBtn");
+          btn.disabled = true;
+          btn.textContent = "Saving...";
+
+          try {
+            await saveStudentCourseRegistration(currentStudent.id, selected);
+            alert(
+              `Curriculum registration saved successfully with your chosen faculty (${totalCredits} Credits)!`,
+            );
+            await loadStudentDashboard();
+            await loadStudentAssignments();
+            switchStudentTab("academics");
+          } catch (err) {
+            alert(err.message);
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Confirm & Save Course Registrations";
+          }
+        });
+
+      // 4. Password Change
+      document
+        .getElementById("studentPasswordForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const currentPassword =
+            document.getElementById("studentCurrentPwd").value;
+          const newPassword = document.getElementById("studentNewPwd").value;
+          const btn = document.getElementById("saveStudentPwdBtn");
+
+          btn.disabled = true;
+          btn.textContent = "Updating...";
+
+          try {
+            await updateStudentPassword(
+              currentStudent.id,
+              currentPassword,
+              newPassword,
+            );
+            alert(
+              "Password updated successfully! Please sign in with your new password next time.",
+            );
+            document.getElementById("studentPasswordForm").reset();
+          } catch (err) {
+            alert("Failed to update password: " + err.message);
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Update Password";
+          }
+        });
+
+      // 5. Logout
+      document
+        .getElementById("studentLogout")
+        ?.addEventListener("click", (e) => {
+          e.preventDefault();
+          clearAllSessions();
+          window.location.replace("login.html");
+        });
+    </script>
+  </body>
+</html>
